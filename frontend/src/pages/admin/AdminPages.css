@@ -330,3 +330,189 @@
   line-height: 1.6;
   margin: 0;
 }
+
+/* ── Dashboard Layout ───────────────────────────────────────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.dashboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── API Usage Progress Bars ───────────────────────────────────────────── */
+.api-usage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.api-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.api-stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.api-stat-rate {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.api-progress-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.api-progress-success {
+  background: #10b981;
+  height: 100%;
+}
+
+.api-progress-failed {
+  background: #ef4444;
+  height: 100%;
+}
+
+.api-stat-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* ── Recent Activity Feed ──────────────────────────────────────────────── */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.activity-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.activity-icon.info { background: #eff6ff; color: #3b82f6; }
+.activity-icon.success { background: #f0fdf4; color: #10b981; }
+.activity-icon.danger { background: #fef2f2; color: #ef4444; }
+
+.activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activity-message {
+  font-size: 0.85rem;
+  color: #1e293b;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* ── Pending Approvals Callout ─────────────────────────────────────────── */
+.pending-approvals-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fde68a;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1);
+  margin-bottom: 20px;
+}
+
+.pending-approvals-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pending-icon {
+  font-size: 2.2rem;
+  background: #f59e0b;
+  color: white;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.pending-text h3 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+.pending-text p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #b45309;
+  font-weight: 500;
+}
+
+.pending-action-btn {
+  background: #f59e0b;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25);
+}
+
+.pending-action-btn:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
