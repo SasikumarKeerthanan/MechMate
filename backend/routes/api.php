@@ -43,14 +43,19 @@ Route::prefix('admin')->group(function () {
     Route::get('/users',                  [UserController::class, 'index']);
     Route::get('/users/{id}',             [UserController::class, 'show']);
     Route::put('/users/{id}',             [UserController::class, 'update']);
+    Route::put('/users/{id}/status',      [UserController::class, 'updateStatus']);
+    Route::delete('/users/{id}',          [UserController::class, 'destroy']);
     Route::patch('/users/{id}/deactivate', [UserController::class, 'deactivate']);
     Route::patch('/users/{id}/activate',   [UserController::class, 'activate']);
 
     // Provider management
-    Route::get('/providers',              [ProviderController::class, 'index']);
-    Route::get('/providers/pending',      [ProviderController::class, 'pending']);
-    Route::post('/providers/{id}/approve', [ProviderController::class, 'approve']);
-    Route::post('/providers/{id}/reject',  [ProviderController::class, 'reject']);
+    Route::get('/providers',                           [ProviderController::class, 'index']);
+    Route::get('/providers/pending',                   [ProviderController::class, 'pending']);
+    Route::get('/providers/email-verification-status', [ProviderController::class, 'emailVerificationStatus']);
+    Route::get('/providers/{id}',                      [ProviderController::class, 'show']);
+    Route::post('/providers/{id}/approve',             [ProviderController::class, 'approve']);
+    Route::post('/providers/{id}/reject',              [ProviderController::class, 'reject']);
+    Route::put('/providers/{id}/status',               [ProviderController::class, 'updateStatus']);
 
     // Categories
     Route::get('/categories',        [CategoryController::class, 'index']);

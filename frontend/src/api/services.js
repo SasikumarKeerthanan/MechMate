@@ -21,6 +21,8 @@ export const usersApi = {
   getAll: (params) => api.get('/admin/users', { params }),
   getById: (id) => api.get(`/admin/users/${id}`),
   update: (id, data) => api.put(`/admin/users/${id}`, data),
+  updateStatus: (id, status) => api.put(`/admin/users/${id}/status`, { status }),
+  delete: (id) => api.delete(`/admin/users/${id}`),
   deactivate: (id) => api.patch(`/admin/users/${id}/deactivate`),
   activate: (id) => api.patch(`/admin/users/${id}/activate`),
 };
@@ -29,8 +31,11 @@ export const usersApi = {
 export const providersApi = {
   getAll: (params) => api.get('/admin/providers', { params }),
   getPending: () => api.get('/admin/providers/pending'),
+  getById: (id) => api.get(`/admin/providers/${id}`),
   approve: (id) => api.post(`/admin/providers/${id}/approve`),
   reject: (id, reason) => api.post(`/admin/providers/${id}/reject`, { reason }),
+  updateStatus: (id, status) => api.put(`/admin/providers/${id}/status`, { status }),
+  getEmailVerificationStatus: () => api.get('/admin/providers/email-verification-status'),
 };
 
 // ── Categories ────────────────────────────────────────────────────────────────
