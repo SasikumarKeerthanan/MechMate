@@ -38,12 +38,33 @@ export const providersApi = {
   getEmailVerificationStatus: () => api.get('/admin/providers/email-verification-status'),
 };
 
-// ── Categories ────────────────────────────────────────────────────────────────
+// ── Categories (Spare Parts & Services) ───────────────────────────────────────
 export const categoriesApi = {
   getAll: () => api.get('/admin/categories'),
   create: (data) => api.post('/admin/categories', data),
   update: (id, data) => api.put(`/admin/categories/${id}`, data),
   delete: (id) => api.delete(`/admin/categories/${id}`),
+
+  // Spare Parts Categories
+  getParts: () => api.get('/admin/categories/parts'),
+  createPart: (data) => api.post('/admin/categories/parts', data),
+  updatePart: (id, data) => api.put(`/admin/categories/parts/${id}`, data),
+  deletePart: (id) => api.delete(`/admin/categories/parts/${id}`),
+
+  // Garage Service Categories
+  getServices: () => api.get('/admin/categories/services'),
+  createService: (data) => api.post('/admin/categories/services', data),
+  updateService: (id, data) => api.put(`/admin/categories/services/${id}`, data),
+  deleteService: (id) => api.delete(`/admin/categories/services/${id}`),
+};
+
+// ── Diagnosis Reference Data & Search History ────────────────────────────────
+export const diagnosisApi = {
+  getAll: (params) => api.get('/admin/diagnosis-data', { params }),
+  create: (data) => api.post('/admin/diagnosis-data', data),
+  update: (id, data) => api.put(`/admin/diagnosis-data/${id}`, data),
+  delete: (id) => api.delete(`/admin/diagnosis-data/${id}`),
+  getHistory: () => api.get('/admin/diagnosis-history'),
 };
 
 // ── Reports ───────────────────────────────────────────────────────────────────

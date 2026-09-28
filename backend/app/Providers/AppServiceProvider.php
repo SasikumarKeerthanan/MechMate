@@ -4,10 +4,12 @@ namespace App\Providers;
 
 use App\Services\Contracts\AdminAuthServiceInterface;
 use App\Services\Contracts\CategoryServiceInterface;
+use App\Services\Contracts\DiagnosisServiceInterface;
 use App\Services\Contracts\ProviderServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
 use App\Services\Mock\MockAdminAuthService;
 use App\Services\Mock\MockCategoryService;
+use App\Services\Mock\MockDiagnosisService;
 use App\Services\Mock\MockProviderService;
 use App\Services\Mock\MockUserService;
 use Illuminate\Support\ServiceProvider;
@@ -34,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserServiceInterface::class,      MockUserService::class);
         $this->app->bind(ProviderServiceInterface::class,  MockProviderService::class);
         $this->app->bind(CategoryServiceInterface::class,  MockCategoryService::class);
+        $this->app->bind(DiagnosisServiceInterface::class, MockDiagnosisService::class);
     }
 
     /**

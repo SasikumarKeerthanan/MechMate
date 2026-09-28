@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\DiagnosisDataController;
 use App\Http\Controllers\Api\Admin\MonitoringController;
 use App\Http\Controllers\Api\Admin\ProviderController;
 use App\Http\Controllers\Api\Admin\ReportController;
@@ -57,11 +58,23 @@ Route::prefix('admin')->group(function () {
     Route::post('/providers/{id}/reject',              [ProviderController::class, 'reject']);
     Route::put('/providers/{id}/status',               [ProviderController::class, 'updateStatus']);
 
-    // Categories
-    Route::get('/categories',        [CategoryController::class, 'index']);
-    Route::post('/categories',       [CategoryController::class, 'store']);
-    Route::put('/categories/{id}',   [CategoryController::class, 'update']);
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+    // Categories (Spare Parts & Garage Services)
+    Route::get('/categories',                  [CategoryController::class, 'index']);
+    Route::get('/categories/parts',            [CategoryController::class, 'getParts']);
+    Route::post('/categories/parts',           [CategoryController::class, 'storePart']);
+    Route::put('/categories/parts/{id}',       [CategoryController::class, 'updatePart']);
+    Route::delete('/categories/parts/{id}',    [CategoryController::class, 'destroyPart']);
+    Route::get('/categories/services',         [CategoryController::class, 'getServices']);
+    Route::post('/categories/services',        [CategoryController::class, 'storeService']);
+    Route::put('/categories/services/{id}',    [CategoryController::class, 'updateService']);
+    Route::delete('/categories/services/{id}', [CategoryController::class, 'destroyService']);
+
+    // Diagnosis Reference Data & Search History
+    Route::get('/diagnosis-data',         [DiagnosisDataController::class, 'index']);
+    Route::post('/diagnosis-data',        [DiagnosisDataController::class, 'store']);
+    Route::put('/diagnosis-data/{id}',    [DiagnosisDataController::class, 'update']);
+    Route::delete('/diagnosis-data/{id}', [DiagnosisDataController::class, 'destroy']);
+    Route::get('/diagnosis-history',      [DiagnosisDataController::class, 'history']);
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index']);
