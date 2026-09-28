@@ -67,19 +67,24 @@ export const diagnosisApi = {
   getHistory: () => api.get('/admin/diagnosis-history'),
 };
 
-// ── Reports ───────────────────────────────────────────────────────────────────
+// ── Reports & System Analytics ────────────────────────────────────────────────
 export const reportsApi = {
-  getSummary: (params) => api.get('/admin/reports', { params }),
+  getSummary: (params) => api.get('/admin/reports/summary', { params }),
+  getExport: (format = 'csv') => api.get('/admin/reports/export', { params: { format } }),
 };
 
-// ── Reviews / Moderation ─────────────────────────────────────────────────────
+// ── Ratings & Reviews Moderation ──────────────────────────────────────────────
 export const reviewsApi = {
+  getAll: (params) => api.get('/admin/reviews', { params }),
   getFlagged: () => api.get('/admin/reviews/flagged'),
+  updateStatus: (id, status) => api.put(`/admin/reviews/${id}/status`, { status }),
   approve: (id) => api.patch(`/admin/reviews/${id}/approve`),
   remove: (id) => api.delete(`/admin/reviews/${id}`),
 };
 
-// ── Monitoring ────────────────────────────────────────────────────────────────
+// ── API Usage & System Health Monitoring ──────────────────────────────────────
 export const monitoringApi = {
   getLive: () => api.get('/admin/monitoring'),
+  getApiLogs: (params) => api.get('/admin/monitoring/api-logs', { params }),
+  getAlerts: () => api.get('/admin/monitoring/alerts'),
 };

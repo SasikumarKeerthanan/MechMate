@@ -76,14 +76,20 @@ Route::prefix('admin')->group(function () {
     Route::delete('/diagnosis-data/{id}', [DiagnosisDataController::class, 'destroy']);
     Route::get('/diagnosis-history',      [DiagnosisDataController::class, 'history']);
 
-    // Reports
-    Route::get('/reports', [ReportController::class, 'index']);
+    // Reports & System Analytics
+    Route::get('/reports',         [ReportController::class, 'index']);
+    Route::get('/reports/summary', [ReportController::class, 'summary']);
+    Route::get('/reports/export',  [ReportController::class, 'export']);
 
-    // Reviews / Moderation
+    // Ratings & Reviews Moderation
+    Route::get('/reviews',                 [ReviewController::class, 'index']);
+    Route::put('/reviews/{id}/status',     [ReviewController::class, 'updateStatus']);
+    Route::delete('/reviews/{id}',         [ReviewController::class, 'destroy']);
     Route::get('/reviews/flagged',         [ReviewController::class, 'flagged']);
     Route::patch('/reviews/{id}/approve',  [ReviewController::class, 'approve']);
-    Route::delete('/reviews/{id}',         [ReviewController::class, 'destroy']);
 
-    // Monitoring
-    Route::get('/monitoring', [MonitoringController::class, 'live']);
+    // API Usage & System Health Monitoring
+    Route::get('/monitoring',          [MonitoringController::class, 'live']);
+    Route::get('/monitoring/api-logs', [MonitoringController::class, 'apiLogs']);
+    Route::get('/monitoring/alerts',   [MonitoringController::class, 'alerts']);
 });
