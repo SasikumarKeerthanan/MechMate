@@ -172,6 +172,7 @@ MechMate/
 │   │   │   └── AppServiceProvider.php       # Service container bindings
 │   │   └── Services/
 │   │       ├── Contracts/                   # Service interfaces
+│   │       ├── Firebase/                    # Live Firebase Firestore implementations
 │   │       └── Mock/                        # Local mock & storage implementations
 │   ├── routes/
 │   │   └── api.php                          # Registered REST API routes
