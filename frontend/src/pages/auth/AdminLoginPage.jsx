@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
@@ -12,6 +12,10 @@ export default function AdminLoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    document.title = 'MechMate | Admin Login';
+  }, []);
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));

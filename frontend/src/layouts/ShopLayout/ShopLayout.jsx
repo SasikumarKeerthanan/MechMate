@@ -11,6 +11,14 @@ const NAV_ITEMS = [
   { path: '/shop/reviews',   icon: '⭐', label: 'Ratings & Reviews' },
 ];
 
+const SHOP_TITLES = {
+  '/shop/dashboard': 'MechMate Shop | Dashboard',
+  '/shop/profile':   'MechMate Shop | Store Profile',
+  '/shop/inventory': 'MechMate Shop | Spare Parts Inventory',
+  '/shop/inquiries': 'MechMate Shop | Customer Inquiries',
+  '/shop/reviews':   'MechMate Shop | Customer Reviews',
+};
+
 export default function ShopLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [shopProfile, setShopProfile] = useState(null);
@@ -20,6 +28,8 @@ export default function ShopLayout({ children }) {
   const location = useLocation();
 
   useEffect(() => {
+    document.title = SHOP_TITLES[location.pathname] || 'MechMate Shop';
+
     // Load shop profile
     shopApi.getProfile()
       .then(({ data }) => {

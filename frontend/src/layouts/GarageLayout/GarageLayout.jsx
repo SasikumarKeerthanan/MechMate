@@ -12,6 +12,15 @@ const NAV_ITEMS = [
   { path: '/garage/reviews',   icon: '⭐', label: 'Ratings & Reviews' },
 ];
 
+const GARAGE_TITLES = {
+  '/garage/dashboard': 'MechMate Garage | Dashboard',
+  '/garage/profile':   'MechMate Garage | Workshop Profile',
+  '/garage/vehicles':  'MechMate Garage | Supported Vehicles',
+  '/garage/services':  'MechMate Garage | Service Packages',
+  '/garage/inquiries': 'MechMate Garage | Booking Inquiries',
+  '/garage/reviews':   'MechMate Garage | Customer Reviews',
+};
+
 export default function GarageLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [garageProfile, setGarageProfile] = useState(null);
@@ -21,6 +30,8 @@ export default function GarageLayout({ children }) {
   const location = useLocation();
 
   useEffect(() => {
+    document.title = GARAGE_TITLES[location.pathname] || 'MechMate Garage';
+
     // Load profile
     garageApi.getProfile()
       .then(({ data }) => {

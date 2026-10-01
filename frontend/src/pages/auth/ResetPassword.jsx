@@ -42,6 +42,10 @@ export default function ResetPassword() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
+    document.title = 'MechMate | Reset Password';
+  }, []);
+
+  useEffect(() => {
     if (initialEmail) setEmail(initialEmail);
     if (initialCode) setCode(initialCode);
   }, [initialEmail, initialCode]);

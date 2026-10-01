@@ -57,6 +57,11 @@ export default function ForgotPassword() {
     { label: 'Mechanic', email: 'mechanic@mechmate.lk', role: 'Mechanic' },
   ];
 
+  // Set document title
+  useEffect(() => {
+    document.title = 'MechMate | Forgot Password';
+  }, []);
+
   // Expiration countdown
   useEffect(() => {
     let timer;

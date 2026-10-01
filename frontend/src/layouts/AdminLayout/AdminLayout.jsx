@@ -15,6 +15,17 @@ const NAV_ITEMS = [
   { path: '/admin/reports',        icon: '📈', label: 'Reports'         },
 ];
 
+const ADMIN_TITLES = {
+  '/admin/dashboard':      'MechMate Admin | Dashboard',
+  '/admin/users':          'MechMate Admin | User Management',
+  '/admin/providers':      'MechMate Admin | Provider Approvals',
+  '/admin/categories':     'MechMate Admin | Category Management',
+  '/admin/diagnosis-data': 'MechMate Admin | Diagnosis Reference',
+  '/admin/monitoring':     'MechMate Admin | API Telemetry',
+  '/admin/reviews':        'MechMate Admin | Review Moderation',
+  '/admin/reports':        'MechMate Admin | System Reports',
+};
+
 export default function AdminLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [pendingProvidersCount, setPendingProvidersCount] = useState(0);
@@ -24,6 +35,8 @@ export default function AdminLayout({ children }) {
   const location = useLocation();
 
   useEffect(() => {
+    document.title = ADMIN_TITLES[location.pathname] || 'MechMate Admin';
+
     providersApi.getPending()
       .then(({ data }) => {
         if (data.success && Array.isArray(data.providers)) {
