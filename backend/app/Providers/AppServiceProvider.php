@@ -7,6 +7,9 @@ use App\Services\Contracts\CategoryServiceInterface;
 use App\Services\Contracts\DiagnosisServiceInterface;
 use App\Services\Contracts\ProviderServiceInterface;
 use App\Services\Contracts\UserServiceInterface;
+use App\Services\Firebase\FirebaseCategoryService;
+use App\Services\Firebase\FirebaseDiagnosisService;
+use App\Services\Firebase\FirebaseProviderService;
 use App\Services\Firebase\FirebaseUserService;
 use App\Services\Mock\MockAdminAuthService;
 use App\Services\Mock\MockCategoryService;
@@ -35,9 +38,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AdminAuthServiceInterface::class, MockAdminAuthService::class);
         $this->app->bind(UserServiceInterface::class,      FirebaseUserService::class);
-        $this->app->bind(ProviderServiceInterface::class,  MockProviderService::class);
-        $this->app->bind(CategoryServiceInterface::class,  MockCategoryService::class);
-        $this->app->bind(DiagnosisServiceInterface::class, MockDiagnosisService::class);
+        $this->app->bind(ProviderServiceInterface::class,  FirebaseProviderService::class);
+        $this->app->bind(CategoryServiceInterface::class,  FirebaseCategoryService::class);
+        $this->app->bind(DiagnosisServiceInterface::class, FirebaseDiagnosisService::class);
     }
 
     /**
