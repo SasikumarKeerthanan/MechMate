@@ -88,3 +88,19 @@ export const monitoringApi = {
   getApiLogs: (params) => api.get('/admin/monitoring/api-logs', { params }),
   getAlerts: () => api.get('/admin/monitoring/alerts'),
 };
+
+// ── Spare Part Shop Owner ─────────────────────────────────────────────────────
+export const shopApi = {
+  getProfile: (shopId) => api.get('/shop/profile', { params: shopId ? { shop_id: shopId } : {} }),
+  updateProfile: (data, shopId) => api.put('/shop/profile', data, { params: shopId ? { shop_id: shopId } : {} }),
+  getParts: (params) => api.get('/shop/parts', { params }),
+  addPart: (data, shopId) => api.post('/shop/parts', data, { params: shopId ? { shop_id: shopId } : {} }),
+  updatePart: (id, data) => api.put(`/shop/parts/${id}`, data),
+  deletePart: (id) => api.delete(`/shop/parts/${id}`),
+  getPartHistory: (id) => api.get(`/shop/parts/${id}/history`),
+  getInquiries: (params) => api.get('/shop/inquiries', { params }),
+  replyInquiry: (id, response) => api.post(`/shop/inquiries/${id}/reply`, { response }),
+  getReviews: (params) => api.get('/shop/reviews', { params }),
+  getAnalytics: (params) => api.get('/shop/analytics', { params }),
+};
+

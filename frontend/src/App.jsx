@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './layouts/AdminLayout/AdminLayout';
+import ShopLayout  from './layouts/ShopLayout/ShopLayout';
 
 // ── Auth / Public pages ───────────────────────────────────────────────────
 import AdminLoginPage    from './pages/auth/AdminLoginPage';
@@ -19,9 +20,21 @@ import MonitoringPage    from './pages/admin/MonitoringPage';
 import ReviewsPage       from './pages/admin/ReviewsPage';
 import ReportsPage       from './pages/admin/ReportsPage';
 
+// ── Shop Owner pages ──────────────────────────────────────────────────────
+import ShopDashboard from './pages/shop/ShopDashboard';
+import ShopProfile   from './pages/shop/ShopProfile';
+import ShopInventory from './pages/shop/ShopInventory';
+import ShopInquiries from './pages/shop/ShopInquiries';
+import ShopReviews   from './pages/shop/ShopReviews';
+
 /** Wraps an admin page inside the shared layout */
 function AdminPage({ children }) {
   return <AdminLayout>{children}</AdminLayout>;
+}
+
+/** Wraps a shop owner page inside the shared shop layout */
+function ShopPage({ children }) {
+  return <ShopLayout>{children}</ShopLayout>;
 }
 
 export default function App() {
@@ -46,6 +59,14 @@ export default function App() {
             <Route path="/admin/reports"        element={<AdminPage><ReportsPage       /></AdminPage>} />
           </Route>
 
+          {/* ── Spare Part Shop Owner routes ── */}
+          <Route path="/shop/dashboard" element={<ShopPage><ShopDashboard /></ShopPage>} />
+          <Route path="/shop/profile"   element={<ShopPage><ShopProfile   /></ShopPage>} />
+          <Route path="/shop/inventory" element={<ShopPage><ShopInventory /></ShopPage>} />
+          <Route path="/shop/inquiries" element={<ShopPage><ShopInquiries /></ShopPage>} />
+          <Route path="/shop/reviews"   element={<ShopPage><ShopReviews   /></ShopPage>} />
+          <Route path="/shop"           element={<Navigate to="/shop/dashboard" replace />} />
+
           {/* ── Fallback ── */}
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/"      element={<Navigate to="/admin/login"     replace />} />
@@ -55,3 +76,4 @@ export default function App() {
     </AuthProvider>
   );
 }
+
