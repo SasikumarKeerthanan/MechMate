@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { garageApi } from '../../api/services';
+import { garageApi, categoriesApi } from '../../api/services';
 import './GaragePages.css';
 
-const SERVICE_CATEGORIES = [
+const DEFAULT_SERVICE_CATEGORIES = [
   'All Categories',
   'Periodic Lubrication & Oil Change',
   'Wheel Alignment & Balancing',
@@ -32,6 +32,7 @@ const DEFAULT_SERVICE_FORM = {
 export default function ServicesCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [services, setServices] = useState([]);
+  const [categoriesList, setCategoriesList] = useState(DEFAULT_SERVICE_CATEGORIES);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
@@ -71,6 +72,18 @@ export default function ServicesCatalog() {
 
   useEffect(() => {
     fetchServices();
+    // Dynamically fetch garage service categories managed by Admin
+    categoriesApi.getServices()
+      .then(({ data }) => {
+        if (data.success && Array.isArray(data.categories)) {
+          const names = data.categories.map((c) => c.name).filter(Boolean);
+          if (names.length > 0) {
+            const unique = Array.from(new Set(['All Categories', ...names, ...DEFAULT_SERVICE_CATEGORIES.slice(1)]));
+            setCategoriesList(unique);
+          }
+        }
+      })
+      .catch((err) => console.warn('Using default service categories:', err));
   }, []);
 
   // Check URL query action=add
@@ -221,7 +234,7 @@ export default function ServicesCatalog() {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              {SERVICE_CATEGORIES.map((c) => (
+              {categoriesList.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -388,7 +401,7 @@ export default function ServicesCatalog() {
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       required
                     >
-                      {SERVICE_CATEGORIES.filter((c) => c !== 'All Categories').map((c) => (
+                      {categoriesList.filter((c) => c !== 'All Categories').map((c) => (
                         <option key={c} value={c}>{c}</option>
                       ))}
                     </select>

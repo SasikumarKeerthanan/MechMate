@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { providersApi, reviewsApi } from '../../api/services';
 import './AdminLayout.css';
 
 const NAV_ITEMS = [
@@ -16,8 +17,29 @@ const NAV_ITEMS = [
 
 export default function AdminLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [pendingProvidersCount, setPendingProvidersCount] = useState(0);
+  const [flaggedReviewsCount, setFlaggedReviewsCount] = useState(0);
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    providersApi.getPending()
+      .then(({ data }) => {
+        if (data.success && Array.isArray(data.providers)) {
+          setPendingProvidersCount(data.providers.length);
+        }
+      })
+      .catch(() => {});
+
+    reviewsApi.getFlagged()
+      .then(({ data }) => {
+        if (data.success && Array.isArray(data.flagged)) {
+          setFlaggedReviewsCount(data.flagged.length);
+        }
+      })
+      .catch(() => {});
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -58,10 +80,23 @@ export default function AdminLayout({ children }) {
               title={collapsed ? label : undefined}
             >
               <span className="nav-icon">{icon}</span>
-              {!collapsed && <span className="nav-label">{label}</span>}
+              {!collapsed && (
+                <>
+                  <span className="nav-label">{label}</span>
+                  {path === '/admin/providers' && pendingProvidersCount > 0 && (
+                    <span className="admin-nav-badge">{pendingProvidersCount} new</span>
+                  )}
+                  {path === '/admin/reviews' && flaggedReviewsCount > 0 && (
+                    <span className="admin-nav-badge" style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)', background: 'rgba(239, 68, 68, 0.2)' }}>
+                      {flaggedReviewsCount} alert
+                    </span>
+                  )}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
+
 
         <div className="sidebar-footer">
           <button

@@ -129,9 +129,16 @@ export default function GarageLayout({ children }) {
             <div className="garage-header-title">
               <h2 className="garage-header-name">
                 {garageProfile?.business_name || 'Precision Tune Station'}
-                <span className="garage-verified-badge" title="Verified Service Centre">
-                  ✓ Verified Service Centre
-                </span>
+                {garageProfile?.email_verification_status === 'pending' || garageProfile?.email_verified === false ? (
+                  <span style={{ background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', padding: '3px 8px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }} title="Email confirmation is pending">
+                    ⏳ Verification Pending
+                  </span>
+                ) : (
+                  <span className="garage-verified-badge" title="Verified Service Centre">
+                    ✓ Verified Service Centre
+                  </span>
+                )}
+
               </h2>
               <p className="garage-header-loc">
                 📍 {garageProfile?.city || 'Colombo'} • {garageProfile?.address || '500 High Level Road, Nugegoda'} • 📞 {garageProfile?.phone || '+94 11 254 7711'}

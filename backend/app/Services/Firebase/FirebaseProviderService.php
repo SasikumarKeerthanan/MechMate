@@ -271,6 +271,9 @@ class FirebaseProviderService implements ProviderServiceInterface
             $docRef->set($updatePayload, ['merge' => true]);
 
             $businessName = $currentData['business_name'] ?? 'Provider ' . $id;
+            $type = (string) ($currentData['type'] ?? 'shop');
+            $this->syncProviderTargetCollection($id, $type, 'approved');
+
             $email = $currentData['email'] ?? 'unspecified';
             Log::info("[STUB EMAIL DISPATCH] Verification code {$verificationCode} dispatched to approved provider '{$businessName}' ({$email}) at {$dispatchedAt}");
 
@@ -311,6 +314,9 @@ class FirebaseProviderService implements ProviderServiceInterface
 
             $docRef->set($updatePayload, ['merge' => true]);
 
+            $type = (string) ($currentData['type'] ?? 'shop');
+            $this->syncProviderTargetCollection($id, $type, 'rejected');
+
             $businessName = $currentData['business_name'] ?? 'Provider ' . $id;
             Log::warning("[PROVIDER REGISTRATION REJECTED] Provider ID {$id} ('{$businessName}') rejected by administrator. Reason: {$rejectionReason}");
 
@@ -340,6 +346,7 @@ class FirebaseProviderService implements ProviderServiceInterface
                 return null;
             }
 
+            $currentData = $docRef->snapshot()->data() ?? [];
             $updatePayload = [
                 'status' => $status,
                 'approval_status' => $status,
@@ -347,12 +354,42 @@ class FirebaseProviderService implements ProviderServiceInterface
 
             $docRef->set($updatePayload, ['merge' => true]);
 
+            $type = (string) ($currentData['type'] ?? 'shop');
+            $this->syncProviderTargetCollection($id, $type, $status);
+
             return $this->formatDocument($docRef->snapshot());
         } catch (Throwable $e) {
             Log::error("FirebaseProviderService: updateProviderStatus failed for {$id}", ['error' => $e->getMessage()]);
             return $this->mockFallback->updateProviderStatus($id, $status);
         }
     }
+
+    /**
+     * Sync approval/rejection/status across shops and service_centres collections.
+     */
+    private function syncProviderTargetCollection(string $id, string $type, string $status): void
+    {
+        if (!$this->db) {
+            return;
+        }
+
+        try {
+            if ($type === 'shop' || $type === 'spare_parts_shop') {
+                $shopRef = $this->db->collection('shops')->document($id);
+                if ($shopRef->snapshot()->exists()) {
+                    $shopRef->set(['status' => $status, 'approval_status' => $status], ['merge' => true]);
+                }
+            } elseif ($type === 'service_center' || $type === 'service_centre' || $type === 'garage') {
+                $centreRef = $this->db->collection('service_centres')->document($id);
+                if ($centreRef->snapshot()->exists()) {
+                    $centreRef->set(['status' => $status, 'approval_status' => $status], ['merge' => true]);
+                }
+            }
+        } catch (Throwable $e) {
+            Log::warning("FirebaseProviderService: Could not sync status to target collection for {$id}: " . $e->getMessage());
+        }
+    }
+
 
     /**
      * Alias for updateProviderStatus.

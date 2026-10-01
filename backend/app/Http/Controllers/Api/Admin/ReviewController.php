@@ -88,6 +88,7 @@ class ReviewController extends Controller
         return response()->json([
             'success' => true,
             'reviews' => array_values($flagged),
+            'flagged' => array_values($flagged),
             'total'   => count($flagged),
         ]);
     }

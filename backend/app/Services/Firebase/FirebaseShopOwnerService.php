@@ -403,10 +403,15 @@ class FirebaseShopOwnerService implements ShopOwnerServiceInterface
                 if ($doc->exists()) {
                     $d = $doc->data();
                     $d['id'] = (string) ($d['id'] ?? $doc->id());
+                    $d['date'] = $d['date'] ?? $d['adjusted_at'] ?? now()->toIso8601String();
+                    $d['final_quantity'] = (int) ($d['final_quantity'] ?? $d['new_quantity'] ?? 0);
+                    $old = (int) ($d['old_quantity'] ?? 0);
+                    $new = (int) ($d['new_quantity'] ?? 0);
+                    $d['quantity_change'] = (int) ($d['quantity_change'] ?? ($new - $old));
                     $history[] = $d;
                 }
             }
-            usort($history, fn($a, $b) => strcmp($b['adjusted_at'] ?? '', $a['adjusted_at'] ?? ''));
+            usort($history, fn($a, $b) => strcmp($b['adjusted_at'] ?? $b['date'] ?? '', $a['adjusted_at'] ?? $a['date'] ?? ''));
             return array_values($history);
         } catch (Throwable $e) {
             Log::error("FirebaseShopOwnerService: getStockHistory failed: " . $e->getMessage());
@@ -427,11 +432,13 @@ class FirebaseShopOwnerService implements ShopOwnerServiceInterface
                 if ($doc->exists()) {
                     $d = $doc->data();
                     $d['id'] = (string) ($d['id'] ?? $doc->id());
+                    $d['date'] = $d['date'] ?? $d['changed_at'] ?? now()->toIso8601String();
                     $history[] = $d;
                 }
             }
-            usort($history, fn($a, $b) => strcmp($b['changed_at'] ?? '', $a['changed_at'] ?? ''));
+            usort($history, fn($a, $b) => strcmp($b['changed_at'] ?? $b['date'] ?? '', $a['changed_at'] ?? $a['date'] ?? ''));
             return array_values($history);
+
         } catch (Throwable $e) {
             Log::error("FirebaseShopOwnerService: getPriceHistory failed: " . $e->getMessage());
             return [];
@@ -506,9 +513,12 @@ class FirebaseShopOwnerService implements ShopOwnerServiceInterface
             foreach ($documents as $doc) {
                 if ($doc->exists()) {
                     $d = $doc->data();
-                    $match = (($d['shop_id'] ?? null) == $shopId) ||
+                    $isPublished = ($d['status'] ?? 'published') !== 'hidden';
+                    $match = $isPublished && (
+                             (($d['shop_id'] ?? null) == $shopId) ||
                              (stripos($d['target_name'] ?? '', $shopName) !== false) ||
-                             (($d['target_type'] ?? '') === 'shop');
+                             (($d['target_type'] ?? '') === 'shop')
+                    );
                     if ($match) {
                         $d['id'] = (string) ($d['id'] ?? $doc->id());
                         $reviews[] = $d;

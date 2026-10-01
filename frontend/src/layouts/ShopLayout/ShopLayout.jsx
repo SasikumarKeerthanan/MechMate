@@ -135,9 +135,16 @@ export default function ShopLayout({ children }) {
             <div className="shop-header-shop-title">
               <h2 className="shop-header-name">
                 {shopProfile?.name || 'SpeedServe Auto Parts'}
-                <span className="shop-verified-badge" title="Official Verified Merchant">
-                  ✓ Verified Provider
-                </span>
+                {shopProfile?.email_verification_status === 'pending' || shopProfile?.email_verified === false ? (
+                  <span style={{ background: '#fffbeb', color: '#d97706', border: '1px solid #fde68a', padding: '3px 8px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }} title="Email confirmation is pending">
+                    ⏳ Verification Pending
+                  </span>
+                ) : (
+                  <span className="shop-verified-badge" title="Official Verified Merchant">
+                    ✓ Verified Provider
+                  </span>
+                )}
+
               </h2>
               <p className="shop-header-loc">
                 📍 {shopProfile?.city || 'Colombo'}, Sri Lanka • {shopProfile?.phone || '+94 11 432 9988'}

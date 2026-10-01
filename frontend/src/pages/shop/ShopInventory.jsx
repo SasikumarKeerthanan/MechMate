@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { shopApi } from '../../api/services';
+import { shopApi, categoriesApi } from '../../api/services';
 import './ShopPages.css';
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   'All Categories',
   'Engine Components',
   'Brakes & Hydraulics',
@@ -46,8 +46,10 @@ const DEFAULT_PART_FORM = {
 export default function ShopInventory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [parts, setParts] = useState([]);
+  const [categoriesList, setCategoriesList] = useState(DEFAULT_CATEGORIES);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+
 
   // Filters state
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,6 +94,18 @@ export default function ShopInventory() {
 
   useEffect(() => {
     fetchParts();
+    // Dynamically fetch part categories managed by Admin
+    categoriesApi.getParts()
+      .then(({ data }) => {
+        if (data.success && Array.isArray(data.categories)) {
+          const names = data.categories.map((c) => c.name).filter(Boolean);
+          if (names.length > 0) {
+            const unique = Array.from(new Set(['All Categories', ...names, ...DEFAULT_CATEGORIES.slice(1)]));
+            setCategoriesList(unique);
+          }
+        }
+      })
+      .catch((err) => console.warn('Using default part categories:', err));
   }, []);
 
   // Handle URL query for adding part
@@ -295,7 +309,7 @@ export default function ShopInventory() {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              {CATEGORIES.map((cat) => (
+              {categoriesList.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -518,7 +532,7 @@ export default function ShopInventory() {
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       required
                     >
-                      {CATEGORIES.filter((c) => c !== 'All Categories').map((cat) => (
+                      {categoriesList.filter((c) => c !== 'All Categories').map((cat) => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
@@ -691,7 +705,7 @@ export default function ShopInventory() {
                           <div key={idx} className="history-item">
                             <span className="history-item-dot"></span>
                             <div className="history-meta">
-                              <span>📅 {item.date || 'Recent'}</span>
+                              <span>📅 {item.date && !isNaN(new Date(item.date).getTime()) ? new Date(item.date).toLocaleString() : (item.date || 'Recent')}</span>
                               <span>•</span>
                               <strong style={{ color: '#d97706', textTransform: 'capitalize' }}>
                                 {item.change_type || 'Adjustment'}
@@ -721,7 +735,7 @@ export default function ShopInventory() {
                           <div key={idx} className="history-item">
                             <span className="history-item-dot price"></span>
                             <div className="history-meta">
-                              <span>📅 {item.date || 'Recent'}</span>
+                              <span>📅 {item.date && !isNaN(new Date(item.date).getTime()) ? new Date(item.date).toLocaleString() : (item.date || 'Recent')}</span>
                             </div>
                             <div className="history-title">
                               LKR {Number(item.old_price || 0).toLocaleString()} → <strong>LKR {Number(item.new_price || 0).toLocaleString()}</strong>

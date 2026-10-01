@@ -386,9 +386,12 @@ class FirebaseServiceCentreService implements ServiceCentreServiceInterface
             foreach ($documents as $doc) {
                 if ($doc->exists()) {
                     $d = $doc->data();
-                    $match = (($d['garage_id'] ?? null) == $garageId) ||
+                    $isPublished = ($d['status'] ?? 'published') !== 'hidden';
+                    $match = $isPublished && (
+                             (($d['garage_id'] ?? null) == $garageId) ||
                              (stripos($d['target_name'] ?? '', $garageName) !== false) ||
-                             (($d['target_type'] ?? '') === 'service_center');
+                             (($d['target_type'] ?? '') === 'service_center')
+                    );
                     if ($match) {
                         $d['id'] = (string) ($d['id'] ?? $doc->id());
                         $reviews[] = $d;
