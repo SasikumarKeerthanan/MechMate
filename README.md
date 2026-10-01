@@ -138,16 +138,21 @@ npm run dev
 All business logic and data access are decoupled behind abstract interfaces under `backend/app/Services/Contracts/`.
 
 To switch from Mock mode to Firebase/Firestore:
-1. Create concrete Firebase service classes implementing the corresponding interfaces (e.g. `FirebaseUserService`, `FirebaseProviderService`, `FirebaseCategoryService`, etc.).
-2. Update bindings in `backend/app/Providers/AppServiceProvider.php`:
-   ```php
-   $this->app->bind(AdminAuthServiceInterface::class, FirebaseAdminAuthService::class);
-   $this->app->bind(UserServiceInterface::class,      FirebaseUserService::class);
-   $this->app->bind(ProviderServiceInterface::class,  FirebaseProviderService::class);
-   $this->app->bind(CategoryServiceInterface::class,  FirebaseCategoryService::class);
-   $this->app->bind(DiagnosisServiceInterface::class, FirebaseDiagnosisService::class);
-   ```
-3. Zero changes required in controllers, API contracts, or frontend client logic.
+1. Concrete Firebase service classes implement the corresponding interfaces:
+   - `FirebaseUserService` (`users` collection)
+   - `FirebaseProviderService` (`providers` collection)
+   - `FirebaseCategoryService` (`categories_parts`, `categories_services` collections)
+   - `FirebaseDiagnosisService` (`diagnosis_reference`, `diagnosis_logs` collections)
+   - `FirebaseReviewService` (`reviews` collection)
+   - `FirebaseMonitoringService` (`api_logs`, `api_alerts` collections)
+   - `FirebaseReportService` (Live cross-collection aggregation)
+2. Registered in `backend/app/Providers/AppServiceProvider.php`.
+3. Artisan Seeders available:
+   - `php artisan db:seed-firebase-users`
+   - `php artisan db:seed-firebase-providers`
+   - `php artisan db:seed-firebase-categories-diagnosis`
+   - `php artisan db:seed-firebase-monitoring`
+4. Zero changes required in controllers, API contracts, or frontend client logic.
 
 ---
 
