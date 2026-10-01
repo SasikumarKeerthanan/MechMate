@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './layouts/AdminLayout/AdminLayout';
-import ShopLayout  from './layouts/ShopLayout/ShopLayout';
+import ShopLayout   from './layouts/ShopLayout/ShopLayout';
+import GarageLayout from './layouts/GarageLayout/GarageLayout';
 
 // ── Auth / Public pages ───────────────────────────────────────────────────
 import AdminLoginPage    from './pages/auth/AdminLoginPage';
@@ -27,6 +28,14 @@ import ShopInventory from './pages/shop/ShopInventory';
 import ShopInquiries from './pages/shop/ShopInquiries';
 import ShopReviews   from './pages/shop/ShopReviews';
 
+// ── Service Centre / Garage Owner pages ───────────────────────────────────
+import GarageDashboard   from './pages/garage/GarageDashboard';
+import GarageProfile     from './pages/garage/GarageProfile';
+import SupportedVehicles from './pages/garage/SupportedVehicles';
+import ServicesCatalog   from './pages/garage/ServicesCatalog';
+import GarageInquiries   from './pages/garage/GarageInquiries';
+import GarageReviews     from './pages/garage/GarageReviews';
+
 /** Wraps an admin page inside the shared layout */
 function AdminPage({ children }) {
   return <AdminLayout>{children}</AdminLayout>;
@@ -36,6 +45,12 @@ function AdminPage({ children }) {
 function ShopPage({ children }) {
   return <ShopLayout>{children}</ShopLayout>;
 }
+
+/** Wraps a garage owner page inside the shared garage layout */
+function GaragePage({ children }) {
+  return <GarageLayout>{children}</GarageLayout>;
+}
+
 
 export default function App() {
   return (
@@ -66,6 +81,16 @@ export default function App() {
           <Route path="/shop/inquiries" element={<ShopPage><ShopInquiries /></ShopPage>} />
           <Route path="/shop/reviews"   element={<ShopPage><ShopReviews   /></ShopPage>} />
           <Route path="/shop"           element={<Navigate to="/shop/dashboard" replace />} />
+
+          {/* ── Service Centre / Garage Owner routes ── */}
+          <Route path="/garage/dashboard" element={<GaragePage><GarageDashboard   /></GaragePage>} />
+          <Route path="/garage/profile"   element={<GaragePage><GarageProfile     /></GaragePage>} />
+          <Route path="/garage/vehicles"  element={<GaragePage><SupportedVehicles /></GaragePage>} />
+          <Route path="/garage/services"  element={<GaragePage><ServicesCatalog   /></GaragePage>} />
+          <Route path="/garage/inquiries" element={<GaragePage><GarageInquiries   /></GaragePage>} />
+          <Route path="/garage/reviews"   element={<GaragePage><GarageReviews     /></GaragePage>} />
+          <Route path="/garage"           element={<Navigate to="/garage/dashboard" replace />} />
+
 
           {/* ── Fallback ── */}
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

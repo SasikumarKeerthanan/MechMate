@@ -104,3 +104,20 @@ export const shopApi = {
   getAnalytics: (params) => api.get('/shop/analytics', { params }),
 };
 
+// ── Service Centre / Garage Owner ─────────────────────────────────────────────
+export const garageApi = {
+  getProfile: (garageId) => api.get('/garage/profile', { params: garageId ? { garage_id: garageId } : {} }),
+  updateProfile: (data, garageId) => api.put('/garage/profile', data, { params: garageId ? { garage_id: garageId } : {} }),
+  getVehicles: (garageId) => api.get('/garage/vehicles', { params: garageId ? { garage_id: garageId } : {} }),
+  updateVehicles: (vehicles, garageId) => api.put('/garage/vehicles', { vehicles }, { params: garageId ? { garage_id: garageId } : {} }),
+  getServices: (params) => api.get('/garage/services', { params }),
+  addService: (data, garageId) => api.post('/garage/services', data, { params: garageId ? { garage_id: garageId } : {} }),
+  updateService: (id, data) => api.put(`/garage/services/${id}`, data),
+  deleteService: (id) => api.delete(`/garage/services/${id}`),
+  getInquiries: (params) => api.get('/garage/inquiries', { params }),
+  replyInquiry: (id, reply) => api.post(`/garage/inquiries/${id}/reply`, { reply }),
+  getReviews: (params) => api.get('/garage/reviews', { params }),
+  getAnalytics: (params) => api.get('/garage/analytics', { params }),
+};
+
+
