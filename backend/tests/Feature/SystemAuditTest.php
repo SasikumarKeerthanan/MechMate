@@ -7,10 +7,11 @@ use Tests\TestCase;
 class SystemAuditTest extends TestCase
 {
     /**
-     * Test Category Synchronization APIs.
+     * Test Category Synchronization and Deletion APIs.
      */
     public function test_category_endpoints(): void
     {
+        // 1. Verify standard part categories
         $responseParts = $this->getJson('/api/admin/categories/parts');
         $responseParts->assertStatus(200)
             ->assertJsonStructure([
@@ -18,12 +19,62 @@ class SystemAuditTest extends TestCase
                 'categories',
             ]);
 
+        // 2. Create a temporary part category
+        $createPart = $this->postJson('/api/admin/categories/parts', [
+            'name'        => 'Temporary QA Part Category',
+            'icon'        => '🧪',
+            'description' => 'Temporary category for delete synchronization audit',
+            'item_count'  => 0,
+            'active'      => true,
+        ]);
+        $createPart->assertStatus(201);
+        $tempPartId = $createPart->json('category.id');
+
+        // 3. Delete the temporary part category
+        $deletePart = $this->deleteJson("/api/admin/categories/parts/{$tempPartId}");
+        $deletePart->assertStatus(200)
+            ->assertJson([
+                'success'    => true,
+                'deleted_id' => $tempPartId,
+            ]);
+
+        // 4. Verify it disappeared from list
+        $verifyPartList = $this->getJson('/api/admin/categories/parts');
+        $partNames = array_column($verifyPartList->json('categories'), 'name');
+        $this->assertNotContains('Temporary QA Part Category', $partNames);
+
+        // 5. Verify standard service categories
         $responseServices = $this->getJson('/api/admin/categories/services');
         $responseServices->assertStatus(200)
             ->assertJsonStructure([
                 'success',
                 'categories',
             ]);
+
+        // 6. Create a temporary service category
+        $createService = $this->postJson('/api/admin/categories/services', [
+            'name'           => 'Temporary QA Service Category',
+            'icon'           => '🧪',
+            'description'    => 'Temporary service category for delete audit',
+            'estimated_time' => '30 mins',
+            'popular'        => false,
+            'active'         => true,
+        ]);
+        $createService->assertStatus(201);
+        $tempServiceId = $createService->json('category.id');
+
+        // 7. Delete the temporary service category
+        $deleteService = $this->deleteJson("/api/admin/categories/services/{$tempServiceId}");
+        $deleteService->assertStatus(200)
+            ->assertJson([
+                'success'    => true,
+                'deleted_id' => $tempServiceId,
+            ]);
+
+        // 8. Verify it disappeared from list
+        $verifyServiceList = $this->getJson('/api/admin/categories/services');
+        $serviceNames = array_column($verifyServiceList->json('categories'), 'name');
+        $this->assertNotContains('Temporary QA Service Category', $serviceNames);
     }
 
     /**

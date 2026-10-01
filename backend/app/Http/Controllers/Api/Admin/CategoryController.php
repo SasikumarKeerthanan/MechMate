@@ -94,9 +94,10 @@ class CategoryController extends Controller
         }
 
         return response()->json([
-            'success' => true,
-            'message' => "Spare-part category {$id} permanently removed.",
-        ]);
+            'success'    => true,
+            'message'    => "Spare-part category {$id} permanently removed.",
+            'deleted_id' => $id,
+        ], 200);
     }
 
     // ── Garage Service Categories ─────────────────────────────────────────
@@ -173,8 +174,9 @@ class CategoryController extends Controller
         }
 
         return response()->json([
-            'success' => true,
-            'message' => "Service category {$id} permanently removed.",
-        ]);
+            'success'    => true,
+            'message'    => "Service category {$id} permanently removed.",
+            'deleted_id' => $id,
+        ], 200);
     }
 }

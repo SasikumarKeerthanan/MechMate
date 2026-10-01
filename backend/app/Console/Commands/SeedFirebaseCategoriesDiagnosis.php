@@ -71,7 +71,7 @@ class SeedFirebaseCategoriesDiagnosis extends Command
         ],
         [
             'id' => '6',
-            'name' => 'Cooling & Air Conditioning',
+            'name' => 'Cooling & AC',
             'icon' => '❄️',
             'item_count' => 112,
             'description' => 'Aluminum radiators, water pumps, cooling fans, thermostats, and AC compressors.',
@@ -86,6 +86,24 @@ class SeedFirebaseCategoriesDiagnosis extends Command
             'description' => 'Catalytic converters, oxygen sensors, mufflers, exhaust headers, and EGR valves.',
             'active' => true,
             'created_at' => '2024-04-05',
+        ],
+        [
+            'id' => '8',
+            'name' => 'Filters & Maintenance',
+            'icon' => '🛢️',
+            'item_count' => 145,
+            'description' => 'Oil filters, air filters, cabin pollen filters, fuel filters, and spark plugs.',
+            'active' => true,
+            'created_at' => '2024-04-12',
+        ],
+        [
+            'id' => '9',
+            'name' => 'Body & Lighting',
+            'icon' => '💡',
+            'item_count' => 120,
+            'description' => 'Headlamp assemblies, LED bulbs, side mirrors, bumpers, wiper blades, and body panels.',
+            'active' => true,
+            'created_at' => '2024-04-18',
         ],
     ];
 
@@ -349,6 +367,16 @@ class SeedFirebaseCategoriesDiagnosis extends Command
         if (!empty($existing) && !$force) {
             $this->warn("Collection `{$collection->name()}` already contains data. Skipped (use --force).");
             return;
+        }
+
+        // If force flag is provided, purge existing docs to prevent orphaned or stale categories
+        if ($force) {
+            $allExisting = $collection->documents();
+            foreach ($allExisting as $oldDoc) {
+                if ($oldDoc->exists()) {
+                    $oldDoc->reference()->delete();
+                }
+            }
         }
 
         $this->info("Seeding {$label} ({$collection->name()})...");

@@ -147,6 +147,8 @@ export default function CategoriesPage() {
           showToast(`Service category '${updated.name}' updated.`, 'success');
         }
       }
+      // Re-fetch live list to guarantee complete sync
+      await loadCategories();
     } catch {
       showToast('Error saving category changes.', 'danger');
     } finally {
@@ -160,17 +162,26 @@ export default function CategoriesPage() {
     const { id, name } = deleteModal.category;
     const { categoryType } = deleteModal;
 
+    // Optimistically remove from state immediately
+    if (categoryType === 'parts') {
+      setParts((prev) => prev.filter((c) => c.id !== id && c.name !== name));
+    } else {
+      setServices((prev) => prev.filter((c) => c.id !== id && c.name !== name));
+    }
+
     try {
       if (categoryType === 'parts') {
         await categoriesApi.deletePart(id);
-        setParts((prev) => prev.filter((c) => c.id !== id));
       } else {
         await categoriesApi.deleteService(id);
-        setServices((prev) => prev.filter((c) => c.id !== id));
       }
       showToast(`Category '${name}' deleted successfully.`, 'info');
-    } catch {
+      // Refetch live category list from Firestore
+      await loadCategories();
+    } catch (err) {
+      console.error('Failed to delete category:', err);
       showToast('Failed to delete category.', 'danger');
+      loadCategories();
     } finally {
       setDeleteModal({ isOpen: false, categoryType: 'parts', category: null });
     }

@@ -3,25 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { garageApi, categoriesApi } from '../../api/services';
 import './GaragePages.css';
 
-const DEFAULT_SERVICE_CATEGORIES = [
-  'All Categories',
-  'Periodic Lubrication & Oil Change',
-  'Wheel Alignment & Balancing',
-  'Transmission Fluid Flush & Repair',
-  'AC Gas Recharge & Leak Repair',
-  'Computer Diagnostic Scanning',
-  'Brake System Overhaul',
-  'Engine Tune-up & Overhaul',
-  'Hybrid Battery Conditioning',
-  'Suspension & Shock Replacement',
-  'Electrical & Battery Diagnostics',
-];
-
 const AVAILABLE_VEHICLE_TYPES = ['Car', 'SUV', 'Van', 'Motorbike', 'Three-Wheeler', 'Heavy-Duty'];
 
 const DEFAULT_SERVICE_FORM = {
   name: '',
-  category: 'Periodic Lubrication & Oil Change',
+  category: '',
   estimated_price: '',
   estimated_duration: '1.5 hrs',
   supported_vehicle_types: ['Car', 'SUV'],
@@ -32,7 +18,7 @@ const DEFAULT_SERVICE_FORM = {
 export default function ServicesCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [services, setServices] = useState([]);
-  const [categoriesList, setCategoriesList] = useState(DEFAULT_SERVICE_CATEGORIES);
+  const [categoriesList, setCategoriesList] = useState(['All Categories']);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
@@ -70,20 +56,21 @@ export default function ServicesCatalog() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    fetchServices();
-    // Dynamically fetch garage service categories managed by Admin
+  const fetchCategories = () => {
     categoriesApi.getServices()
       .then(({ data }) => {
         if (data.success && Array.isArray(data.categories)) {
           const names = data.categories.map((c) => c.name).filter(Boolean);
-          if (names.length > 0) {
-            const unique = Array.from(new Set(['All Categories', ...names, ...DEFAULT_SERVICE_CATEGORIES.slice(1)]));
-            setCategoriesList(unique);
-          }
+          // Pure live dynamic categories from Firestore API - no static arrays merged
+          setCategoriesList(['All Categories', ...names]);
         }
       })
-      .catch((err) => console.warn('Using default service categories:', err));
+      .catch((err) => console.error('Failed to fetch live service categories:', err));
+  };
+
+  useEffect(() => {
+    fetchServices();
+    fetchCategories();
   }, []);
 
   // Check URL query action=add
@@ -118,16 +105,22 @@ export default function ServicesCatalog() {
   }, [services, searchTerm, selectedCategory, selectedAvailability]);
 
   const openAddModal = () => {
+    fetchCategories();
     setEditingService(null);
-    setFormData(DEFAULT_SERVICE_FORM);
+    const firstCat = categoriesList.find((c) => c !== 'All Categories') || '';
+    setFormData({
+      ...DEFAULT_SERVICE_FORM,
+      category: firstCat,
+    });
     setIsModalOpen(true);
   };
 
   const openEditModal = (srv) => {
+    fetchCategories();
     setEditingService(srv);
     setFormData({
       name: srv.name || '',
-      category: srv.category || 'Periodic Lubrication & Oil Change',
+      category: srv.category || (categoriesList.find((c) => c !== 'All Categories') || ''),
       estimated_price: srv.estimated_price || '',
       estimated_duration: srv.estimated_duration || '1.5 hrs',
       supported_vehicle_types: Array.isArray(srv.supported_vehicle_types)

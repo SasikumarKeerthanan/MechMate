@@ -83,6 +83,13 @@ class FirebaseCategoryService implements CategoryServiceInterface
             }
         }
 
+        $queryName = $collection->where('name', '=', (string)$id)->documents();
+        foreach ($queryName as $doc) {
+            if ($doc->exists()) {
+                return $doc->reference();
+            }
+        }
+
         return null;
     }
 
@@ -223,13 +230,30 @@ class FirebaseCategoryService implements CategoryServiceInterface
         }
 
         try {
-            $docRef = $this->findDocRef($this->partsCollection, $id);
-            if (!$docRef) {
-                return false;
+            $deletedCount = 0;
+            // 1. Direct document ID deletion
+            $docRef = $this->partsCollection->document((string) $id);
+            if ($docRef->snapshot()->exists()) {
+                $docRef->delete();
+                $deletedCount++;
             }
 
-            $docRef->delete();
-            return true;
+            // 2. Query matching 'id' or 'name' across documents
+            $allDocs = $this->partsCollection->documents();
+            foreach ($allDocs as $doc) {
+                if ($doc->exists()) {
+                    $d = $doc->data();
+                    $matchId = (string) ($d['id'] ?? '') === (string) $id || ((string)$doc->id() === (string)$id);
+                    $matchName = strcasecmp(trim($d['name'] ?? ''), trim($id)) === 0;
+                    if ($matchId || $matchName) {
+                        $doc->reference()->delete();
+                        $deletedCount++;
+                    }
+                }
+            }
+
+            Log::info("FirebaseCategoryService: deletePartCategory removed {$deletedCount} document(s) for '{$id}'");
+            return $deletedCount > 0;
         } catch (Throwable $e) {
             Log::error("FirebaseCategoryService: deletePartCategory failed for {$id}", ['error' => $e->getMessage()]);
             return $this->mockFallback->deletePartCategory($id);
@@ -331,13 +355,30 @@ class FirebaseCategoryService implements CategoryServiceInterface
         }
 
         try {
-            $docRef = $this->findDocRef($this->servicesCollection, $id);
-            if (!$docRef) {
-                return false;
+            $deletedCount = 0;
+            // 1. Direct document ID deletion
+            $docRef = $this->servicesCollection->document((string) $id);
+            if ($docRef->snapshot()->exists()) {
+                $docRef->delete();
+                $deletedCount++;
             }
 
-            $docRef->delete();
-            return true;
+            // 2. Query matching 'id' or 'name' across documents
+            $allDocs = $this->servicesCollection->documents();
+            foreach ($allDocs as $doc) {
+                if ($doc->exists()) {
+                    $d = $doc->data();
+                    $matchId = (string) ($d['id'] ?? '') === (string) $id || ((string)$doc->id() === (string)$id);
+                    $matchName = strcasecmp(trim($d['name'] ?? ''), trim($id)) === 0;
+                    if ($matchId || $matchName) {
+                        $doc->reference()->delete();
+                        $deletedCount++;
+                    }
+                }
+            }
+
+            Log::info("FirebaseCategoryService: deleteServiceCategory removed {$deletedCount} document(s) for '{$id}'");
+            return $deletedCount > 0;
         } catch (Throwable $e) {
             Log::error("FirebaseCategoryService: deleteServiceCategory failed for {$id}", ['error' => $e->getMessage()]);
             return $this->mockFallback->deleteServiceCategory($id);

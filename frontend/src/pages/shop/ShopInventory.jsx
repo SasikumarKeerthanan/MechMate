@@ -3,18 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { shopApi, categoriesApi } from '../../api/services';
 import './ShopPages.css';
 
-const DEFAULT_CATEGORIES = [
-  'All Categories',
-  'Engine Components',
-  'Brakes & Hydraulics',
-  'Suspension & Steering',
-  'Transmission & Clutch',
-  'Electrical & Sensors',
-  'Cooling & Air Conditioning',
-  'Filters & Maintenance',
-  'Body & Lighting',
-];
-
 const VEHICLE_MAKES = [
   'All Makes',
   'Toyota',
@@ -31,7 +19,7 @@ const VEHICLE_MAKES = [
 const DEFAULT_PART_FORM = {
   name: '',
   part_number: '',
-  category: 'Engine Components',
+  category: '',
   brand: '',
   model: '',
   price: '',
@@ -46,7 +34,7 @@ const DEFAULT_PART_FORM = {
 export default function ShopInventory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [parts, setParts] = useState([]);
-  const [categoriesList, setCategoriesList] = useState(DEFAULT_CATEGORIES);
+  const [categoriesList, setCategoriesList] = useState(['All Categories']);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
@@ -92,20 +80,21 @@ export default function ShopInventory() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    fetchParts();
-    // Dynamically fetch part categories managed by Admin
+  const fetchCategories = () => {
     categoriesApi.getParts()
       .then(({ data }) => {
         if (data.success && Array.isArray(data.categories)) {
           const names = data.categories.map((c) => c.name).filter(Boolean);
-          if (names.length > 0) {
-            const unique = Array.from(new Set(['All Categories', ...names, ...DEFAULT_CATEGORIES.slice(1)]));
-            setCategoriesList(unique);
-          }
+          // Pure dynamic loading from live Firestore API
+          setCategoriesList(['All Categories', ...names]);
         }
       })
-      .catch((err) => console.warn('Using default part categories:', err));
+      .catch((err) => console.error('Failed to fetch live categories:', err));
+  };
+
+  useEffect(() => {
+    fetchParts();
+    fetchCategories();
   }, []);
 
   // Handle URL query for adding part
@@ -154,9 +143,12 @@ export default function ShopInventory() {
 
   // Open Add Modal
   const openAddModal = () => {
+    fetchCategories();
     setEditingPart(null);
+    const firstCat = categoriesList.find((c) => c !== 'All Categories') || '';
     setFormData({
       ...DEFAULT_PART_FORM,
+      category: firstCat,
       image_url: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=400&q=80',
     });
     setIsEditModalOpen(true);
@@ -164,6 +156,7 @@ export default function ShopInventory() {
 
   // Open Edit Modal
   const openEditModal = (part) => {
+    fetchCategories();
     setEditingPart(part);
     const compatList = Array.isArray(part.vehicle_compatibility)
       ? part.vehicle_compatibility.join(', ')
@@ -171,7 +164,7 @@ export default function ShopInventory() {
     setFormData({
       name: part.name || '',
       part_number: part.part_number || '',
-      category: part.category || 'Engine Components',
+      category: part.category || (categoriesList.find((c) => c !== 'All Categories') || ''),
       brand: part.brand || '',
       model: part.model || '',
       price: part.price || '',
