@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\Admin\ReportController;
 use App\Http\Controllers\Api\Admin\ReviewController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ServiceCentre\ServiceCentreController;
+use App\Http\Controllers\Api\ShopOwner\ShopOwnerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -92,4 +94,55 @@ Route::prefix('admin')->group(function () {
     Route::get('/monitoring',          [MonitoringController::class, 'live']);
     Route::get('/monitoring/api-logs', [MonitoringController::class, 'apiLogs']);
     Route::get('/monitoring/alerts',   [MonitoringController::class, 'alerts']);
+});
+
+// ── Spare Part Shop Owner routes ──────────────────────────────────────────────
+Route::prefix('shop')->group(function () {
+    // Profile
+    Route::get('/profile',  [ShopOwnerController::class, 'getProfile']);
+    Route::put('/profile',  [ShopOwnerController::class, 'updateProfile']);
+
+    // Spare parts catalog & inventory
+    Route::get('/parts',              [ShopOwnerController::class, 'parts']);
+    Route::post('/parts',             [ShopOwnerController::class, 'storePart']);
+    Route::put('/parts/{id}',         [ShopOwnerController::class, 'updatePart']);
+    Route::delete('/parts/{id}',      [ShopOwnerController::class, 'destroyPart']);
+    Route::get('/parts/{id}/history', [ShopOwnerController::class, 'partHistory']);
+
+    // Inquiries
+    Route::get('/inquiries',             [ShopOwnerController::class, 'inquiries']);
+    Route::post('/inquiries/{id}/reply', [ShopOwnerController::class, 'replyInquiry']);
+
+    // Reviews & Ratings
+    Route::get('/reviews', [ShopOwnerController::class, 'reviews']);
+
+    // Analytics
+    Route::get('/analytics', [ShopOwnerController::class, 'analytics']);
+});
+
+// ── Service Centre / Garage Owner routes ──────────────────────────────────────
+Route::prefix('garage')->group(function () {
+    // Profile
+    Route::get('/profile', [ServiceCentreController::class, 'getProfile']);
+    Route::put('/profile', [ServiceCentreController::class, 'updateProfile']);
+
+    // Supported vehicle types
+    Route::get('/vehicles', [ServiceCentreController::class, 'getVehicles']);
+    Route::put('/vehicles', [ServiceCentreController::class, 'updateVehicles']);
+
+    // Services catalog
+    Route::get('/services',         [ServiceCentreController::class, 'services']);
+    Route::post('/services',        [ServiceCentreController::class, 'storeService']);
+    Route::put('/services/{id}',    [ServiceCentreController::class, 'updateService']);
+    Route::delete('/services/{id}', [ServiceCentreController::class, 'destroyService']);
+
+    // Inquiries
+    Route::get('/inquiries',             [ServiceCentreController::class, 'inquiries']);
+    Route::post('/inquiries/{id}/reply', [ServiceCentreController::class, 'replyInquiry']);
+
+    // Reviews & Ratings
+    Route::get('/reviews', [ServiceCentreController::class, 'reviews']);
+
+    // Analytics
+    Route::get('/analytics', [ServiceCentreController::class, 'analytics']);
 });

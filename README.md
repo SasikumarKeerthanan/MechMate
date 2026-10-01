@@ -131,6 +131,37 @@ npm run dev
 | `GET` | `/api/admin/reports/summary` | Aggregated operational metrics, growth charts, category shares |
 | `GET` | `/api/admin/reports/export` | Formatted export rows for CSV/PDF generation |
 
+### Spare Part Shop Owner Module
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/shop/profile` | Retrieve shop details, contact, opening hours, coordinates |
+| `PUT` | `/api/shop/profile` | Update shop details and business description |
+| `GET` | `/api/shop/parts` | List shop spare parts with filters (`category`, `brand`, `model`, `availability`, `search`) |
+| `POST` | `/api/shop/parts` | Add new spare part listing (auto-logs initial stock/price) |
+| `PUT` | `/api/shop/parts/{id}` | Edit part details (auto-logs price and stock adjustments) |
+| `DELETE` | `/api/shop/parts/{id}` | Remove part from catalog |
+| `GET` | `/api/shop/parts/{id}/history` | Retrieve full stock adjustment and price change history |
+| `GET` | `/api/shop/inquiries` | View customer inquiries |
+| `POST` | `/api/shop/inquiries/{id}/reply` | Respond to customer inquiry |
+| `GET` | `/api/shop/reviews` | View customer feedback and ratings |
+| `GET` | `/api/shop/analytics` | View profile visits, top-viewed parts, and low-stock alerts |
+
+### Service Centre / Garage Owner Module
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/garage/profile` | Retrieve garage details, location, hours, description |
+| `PUT` | `/api/garage/profile` | Update service centre profile |
+| `GET` | `/api/garage/vehicles` | Get supported vehicle types (Car, SUV, Van, Motorbike, etc.) |
+| `PUT` | `/api/garage/vehicles` | Update supported vehicle types |
+| `GET` | `/api/garage/services` | List repair and maintenance service packages |
+| `POST` | `/api/garage/services` | Add new service package |
+| `PUT` | `/api/garage/services/{id}` | Update service package |
+| `DELETE` | `/api/garage/services/{id}` | Remove service package |
+| `GET` | `/api/garage/inquiries` | View service booking and maintenance inquiries |
+| `POST` | `/api/garage/inquiries/{id}/reply` | Send response to customer inquiry |
+| `GET` | `/api/garage/reviews` | View customer ratings and reviews |
+| `GET` | `/api/garage/analytics` | View profile visits and most-viewed services |
+
 ---
 
 ## 🔄 Firebase Migration Guide
@@ -146,12 +177,15 @@ To switch from Mock mode to Firebase/Firestore:
    - `FirebaseReviewService` (`reviews` collection)
    - `FirebaseMonitoringService` (`api_logs`, `api_alerts` collections)
    - `FirebaseReportService` (Live cross-collection aggregation)
+   - `FirebaseShopOwnerService` (`shops`, `spare_parts`, `stock_history`, `price_history`, `shop_inquiries`, `shop_analytics`)
+   - `FirebaseServiceCentreService` (`service_centres`, `services_catalog`, `supported_vehicles`, `garage_inquiries`, `garage_analytics`)
 2. Registered in `backend/app/Providers/AppServiceProvider.php`.
 3. Artisan Seeders available:
    - `php artisan db:seed-firebase-users`
    - `php artisan db:seed-firebase-providers`
    - `php artisan db:seed-firebase-categories-diagnosis`
    - `php artisan db:seed-firebase-monitoring`
+   - `php artisan db:seed-firebase-providers-data`
 4. Zero changes required in controllers, API contracts, or frontend client logic.
 
 ---
